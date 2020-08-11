@@ -1,0 +1,271 @@
+作业
+01-----------------------------------------
+
+1 简述管道操作、重定向标准输出操作的基本用法
+
+参考答案
+
+管道操作：
+
+    命令1  |  命令2  |  命令.. ..
+
+重定向标准输出：
+
+    命令  >  文件
+    命令  >>  文件
+
+2 列出Shell环境中常用的环境变量及各自的作用
+
+参考答案
+
+PWD：记录当前所在工作目录
+
+PATH：记录搜索可执行程序的默认目录范围
+
+USER：记录当前用户名
+
+LOGNAME：记录当前用户的登录名
+
+SHELL：记录当前用户登录Shell
+
+HOME：记录当前用户家目录位置
+3 列出Shell环境中常用的预定义变量及各自的作用
+
+参考答案
+
+$0：当前所在的进程或脚本名
+
+$$：当前运行进程的PID号
+
+$?：程序退出后的状态值，0表示正常，其他值异常
+
+$#：已加载的位置变量的个数
+
+$*：所有位置变量的值
+4 在脚本中使用if语句时，如何判断“第一个命令行参数不是文件”
+
+参考答案
+
+使用以下条件测试操作：
+
+     [  ! –f  "$1"  ] 
+
+5 在脚本中使用for语句时，如果从第一个参数提供的文件名获取值列表
+
+参考答案
+
+在脚本中使用如下代码：
+
+    for  file  in $(cat  $1)
+    do
+            命令序列.. ..
+Done
+
+02---------------------------------------------------------------
+
+1 配置虚拟机系统每次开机后SELinux处于强制启用模式
+
+参考答案
+
+    [root@server0 ~]# vim  /etc/selinux/config 
+    SELINUX=enforcing                          //设置为强制启用
+    .. ..
+    [root@server0 ~]# reboot  
+
+2 为所有用户创建一个自定义命令，执行myls时相当于执行ls -lhd
+
+参考答案
+
+    [root@server0 ~]# vim  /etc/bashrc
+    .. ..
+    alias  myls='/bin/ls –lhd  --color=auto'  
+
+3 防火墙体系中的预设保护区域有哪些，各自的作用是什么
+
+参考答案
+
+public：仅允许访问本机的sshd等少数几个服务
+
+trusted：允许任何访问
+
+block：阻塞任何来访请求
+
+drop：丢弃任何来访的数据包
+4 防火墙设置策略时，如何实现永久策略
+
+参考答案
+
+添加--permanent选项
+
+利用firewall-cmd --reload进行重新加载防火墙配置
+
+
+03---------------------------------------------------------------------
+
+1 RHEL7搭建iSCSI服务端与客户端需要安装什么软件
+
+参考答案
+
+    服务端：targetcli
+    客户端：iscsi-initiator-utils
+
+2 客户端为了识别和加载iSCSI网络磁盘需要启动服务有哪些
+
+参考答案
+
+    客户端:iscsi（加载iSCSI网络磁盘）  iscsid（刷新客户端iqn名称）
+
+3 在虚拟机desktop0上搭建MariaDB数据库服务，并将数据库管理密码设为redhat
+
+参考答案
+
+    [root@desktop0 ~]# yum  -y  install  mariadb-server  mariadb
+    .. ..                                                         //装包
+    [root@desktop0 ~]# systemctl  restart  mariadb
+    .. ..                                                         //起服务
+    [root@desktop0 ~]# mysqladmin  -u  root  password  'redhat'          //更改密码
+    [root@desktop0 ~]# mysql  -uroot  -patenorth
+    MariaDB [(none)]>                                     //测试新密码登录成功
+    .. ..
+    MariaDB [(none)]> quit
+    [root@desktop0 ~]# 
+
+4 新建一个库newdb，并授权用户zhsan对此库具有全部权限（密码为redhat）
+
+参考答案
+
+    MariaDB [none]> CREATE  DATABASE  newdb;
+    .. ..
+    MariaDB [none]> GRANT  all  ON  newdb.*  to  zhsan@localhost  IDENTIFIED  BY  'redhat'; 
+
+5 如何查出Contacts库base表内所有记录的数量
+
+参考答案
+
+    MariaDB [none]> SELECT  count(*)  FROM  Contacts.base; 
+    5
+
+
+
+04-----------------------------------------------
+
+1 简述HTTP、HTML的含义及作用
+
+参考答案
+
+HTTP指的是Hyper Text Transfer Protocol，超文本传输协议，主要为网站服务器程序与浏览器之间传输网页定义相关的标准。
+
+HTML指的是Hyper Text Markup Language，超文本标记语言，是静态网页文件的标记规范。
+2 已知Web站点server0的网页目录位于/var/www/html，那么对应与网址http://server0/private/的服务端文件是什么
+
+参考答案
+
+URL网址的/对应Web服务端上DocumentRoot指定的网页目录，其后的URL路径也对应到服务端网页目录下的子目录；当未指定网页文件名时，默认首页为index.html。
+
+因此，此题对应的服务端文件应该是/var/www/html/private/index.html。
+3 简述实现基于域名的多个虚拟Web主机时基本的配置内容
+
+参考答案
+
+    [root@server0 ~]# /etc/httpd/conf.d/httpd.conf
+    .. ..
+    <VirtualHost  IP地址:端口>
+           ServerName  站点1的DNS名称
+           DocumentRoot  站点1的网页根目录
+    </VirtualHost>
+    <VirtualHost  IP地址:端口>
+           ServerName  站点2的DNS名称
+           DocumentRoot  站点2的网页根目录
+    </VirtualHost>
+    .. ..
+
+4 在服务器server0上通过NFS共享/usr/src目录，允许任何人访问
+
+参考答案
+
+    [root@server0 ~]# vim  /etc/exports 
+    /usr/src        *(ro)
+    .. ..
+    [root@server0 ~]# systemctl  restart  nfs-server
+
+5 列出普通NFS服务端和客户端用到的系统服务名称
+
+参考答案
+
+普通NFS：服务端（nfs-server）、客户端（无）
+
+
+05---------------------------------------------------------------
+
+1 调整httpd服务配置，拒绝172.34.0.0/24网段的客户机访问/var/www/html/doc目录
+
+参考答案
+
+修改网站配置文件，添加如下内容：
+
+    <Directory  "/var/www/html/doc">
+            Require  all  granted
+            Require  not  ip  172.34.0.0/24
+    </Directory>
+
+2 在启用SELinux保护的情况下，如何允许httpd开启8909端口
+
+参考答案
+
+    [root@server0 ~]# semanage  port  -a  -t  http_port_t  -p tcp  8909
+    .. ..
+    [root@server0 ~]# semanage  port  -l  |  grep  http_port          //确认结果
+    http_port_t     tcp      8909,80, 81, 443, 488, 8008, 8009, 8443, 9000 
+    .. ..
+
+3 在部署安全Web服务，需要安装的软件包
+
+参考答案
+
+mod_ssl软件包
+
+
+06----------------------------------------------------------------------------
+
+
+1 简述postfix邮件服务配置中myorigin、mydestination语句的含义
+
+参考答案
+
+    myorigin = desktop0.example.com          //向外发邮件时标记的来源域
+    mydestination =                         //判断为本域邮件的依据
+
+2 简述使用mail命令发信、收信的基本操作
+
+参考答案
+
+mail 发信操作：
+
+    mail  -s  '邮件标题'  收件人[@收件域]... 
+
+mail 收信操作：
+
+    mail  [-u  用户名]
+
+3 如何将空闲分区/dev/vdb7配置为交换分区并实现开机自动启用
+
+参考答案
+
+    [root@server0 ~]# mkswap  /dev/vdb7                      //格式化交换分区
+    Setting up swapspace version 1, size = 524284 KiB
+    no label, UUID=26b95ed8-e648-4d30-bea3-de48494bbdfe
+    [root@server0 ~]# vim  /etc/fstab 
+    .. ..
+    /dev/vdb7       swap    swap    defaults    0    0
+    [root@server0 ~]# swapon  -a                         //启动fstab可用交换设备
+    [root@server0 ~]# swapon  -s                         //查看
+    Filename    Type        Size      Used    Priority
+    /dev/vdb7          partition    524284        -1
+
+4 写出创建聚合连接时针对热备份的JSON配置内容
+
+参考答案
+
+热备份配置：
+
+    '{ "runner":{ "name":"activebackup" }  }'
